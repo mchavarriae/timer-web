@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Mejenga</title>
+    <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+    <h1>La Mejenga</h1>
+     <script src="NoSleep.min.js"/></script>
+    <div style="font-family: Orbitron; font-size: 52px; font-weight: 500;" id="timer">05:00</div>
+    <button id="stopButton">Detener</button> <button id="restartButton">Restart</button>
+    <h1 id="currentName"></h1>
+
+    <div class="container">
+
+        <div class="column">
+            <h3>EQUIPO 1</h3>
+            <form id="nameForm1">
+                <input type="text" id="nameInput1" placeholder="Enter name" required>
+                <button type="submit">Agregar</button>
+            </form>
+            <ul id="nameList1"></ul>
+        </div>
+        <div class="column">
+
+            <h3>EQUIPO 2</h3>
+            <form id="nameForm2">
+                <input type="text" id="nameInput2" placeholder="Enter name" required>
+                <button type="submit">Agregar</button>
+            </form>
+            <ul id="nameList2"></ul>
+
+        </div>
+    </div>
+
+    <audio id="alarmSound" src="alarm.mp3"></audio>
+    <script src="script.js"></script>
+</body>
+
+</html>
