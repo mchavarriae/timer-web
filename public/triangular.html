@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Mejenga</title>
+    <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #diceResult {
+            font-size: 24px;
+            margin-top: 10px;
+        }
+
+        .rolling {
+            animation: rollingAnimation 0.5s infinite;
+        }
+
+        @keyframes rollingAnimation {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            25% {
+                transform: rotate(90deg);
+            }
+
+            50% {
+                transform: rotate(180deg);
+            }
+
+            75% {
+                transform: rotate(270deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>La Mejenga</h1>
+    <script src="NoSleep.min.js" />
+    </script>
+    <div style="font-family: Orbitron; font-size: 52px; font-weight: 500;" id="timer">05:00</div>
+    <button id="stopButton">Detener</button> <button id="restartButton">Restart</button>
+    <h1 id="currentName"></h1>
+
+    <div class="container">
+
+        <div class="column">
+            <h3>EQUIPO 1</h3>
+            <form id="nameForm1">
+                <input type="text" id="nameInput1" placeholder="Enter name" required>
+                <button type="submit">Agregar</button>
+            </form>
+            <ul id="nameList1"></ul>
+        </div>
+
+        <div class="column">
+            <h3>EQUIPO 2</h3>
+            <form id="nameForm2">
+                <input type="text" id="nameInput2" placeholder="Enter name" required>
+                <button type="submit">Agregar</button>
+            </form>
+            <ul id="nameList2"></ul>
+        </div>
+
+        <div class="column">
+            <h3>EQUIPO 3</h3>
+            <form id="nameForm3">
+                <input type="text" id="nameInput3" placeholder="Enter name" required>
+                <button type="submit">Agregar</button>
+            </form>
+            <ul id="nameList3"></ul>
+        </div>
+    </div>
+    <div>
+        <button id="shootDiceButton">Lanza un dado</button>
+        <p id="diceResult"></p>
+    </div>
+
+    <audio id="alarmSound" src="alarm.mp3"></audio>
+    <script>
+        let interval;
+        let isRunning = true;
+        let namesList1 = [];
+        let namesList2 = [];
+        let namesList3 = [];
+        let currentIndex1 = 0;
+        let currentIndex2 = 0;
+        let currentIndex3 = 0;
+
+        function startTimer(duration, display) {
+            let timer = duration, minutes, seconds;
+            const alarmSound = document.getElementById('alarmSound');
+
+            interval = setInterval(() => {
+                if (!isRunning) return;
+
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    timer = duration;
+                    alarmSound.play(); // Play the sound when the timer hits zero
+                    showNextName();
+                }
+            }, 1000);
+        }
+
+        function showNextName() {
+            let nameDisplay = '';
+            if (namesList1.length > 0) {
+                currentIndex1 = (currentIndex1 + 1) % namesList1.length;
+                nameDisplay += `Salen: ${namesList1[currentIndex1]} `;
+            }
+            if (namesList2.length > 0) {
+                currentIndex2 = (currentIndex2 + 1) % namesList2.length;
+                nameDisplay += ` y ${namesList2[currentIndex2]} `;
+            }
+            if (namesList3.length > 0) {
+                currentIndex3 = (currentIndex3 + 1) % namesList3.length;
+                nameDisplay += ` y ${namesList3[currentIndex3]}`;
+            }
+            document.getElementById('currentName').textContent = nameDisplay;
+        }
+
+        window.onload = () => {
+            var noSleep = new NoSleep();
+            noSleep.enable(); // keep the screen on!
+
+            let fiveMinutes = 60 * 5,
+                display = document.querySelector('#timer');
+            startTimer(fiveMinutes, display);
+
+            document.getElementById('stopButton').addEventListener('click', () => {
+                isRunning = !isRunning;
+                if (!isRunning) {
+                    clearInterval(interval);
+                } else {
+                    startTimer(fiveMinutes, display);
+                }
+            });
+
+            document.getElementById('restartButton').addEventListener('click', () => {
+                clearInterval(interval);
+                document.getElementById('timer').textContent = "05:00";
+                document.getElementById('currentName').textContent = '';
+                currentIndex1 = 0;
+                currentIndex2 = 0;
+                currentIndex3 = 0;
+                isRunning = true;
+                startTimer(fiveMinutes, display);
+            });
+            document.getElementById('shootDiceButton').addEventListener('click', () => {
+                const diceResultElement = document.getElementById('diceResult');
+
+                // Add the rolling animation
+                diceResultElement.classList.add('rolling');
+                diceResultElement.textContent = 'Rolling...';
+
+                // Simulate rolling for 2 seconds
+                setTimeout(() => {
+                    const diceRoll = Math.floor(Math.random() * 6) + 1; // Generates a number between 1 and 6
+                    diceResultElement.classList.remove('rolling');
+                    diceResultElement.textContent = `Sacaste: ${diceRoll}`;
+                }, 2000); // 2 seconds of animation
+            });
+
+            document.getElementById('nameForm1').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const nameInput1 = document.getElementById('nameInput1');
+                const name1 = nameInput1.value.trim();
+                if (name1) {
+                    namesList1.push(name1);
+                    updateNameList(namesList1, 'nameList1');
+                    nameInput1.value = '';
+                }
+            });
+
+            document.getElementById('nameForm2').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const nameInput2 = document.getElementById('nameInput2');
+                const name2 = nameInput2.value.trim();
+                if (name2) {
+                    namesList2.push(name2);
+                    updateNameList(namesList2, 'nameList2');
+                    nameInput2.value = '';
+                }
+            });
+
+            document.getElementById('nameForm3').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const nameInput3 = document.getElementById('nameInput3');
+                const name3 = nameInput3.value.trim();
+                if (name3) {
+                    namesList3.push(name3);
+                    updateNameList(namesList3, 'nameList3');
+                    nameInput3.value = '';
+                }
+            });
+        };
+
+        function updateNameList(names, listId) {
+            const nameList = document.getElementById(listId);
+            nameList.innerHTML = '';
+            names.forEach((name, index) => {
+                const li = document.createElement('li');
+                li.textContent = name;
+                nameList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+
+</html>
