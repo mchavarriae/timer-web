@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy":"gcloud config set project bioenia && gcloud config set run/region us-central1 && gcloud run deploy"
+    "deploy":" gcloud config set account mchavarriae@gmail.com && gcloud config set project bioenia && gcloud config set run/region us-central1 && gcloud run deploy"
   },
   "author": "",
   "license": "ISC",
