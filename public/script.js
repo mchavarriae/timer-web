@@ -41,23 +41,47 @@ function handleDrop(e) {
 }
 
 // Actualizar la función updateNameList para hacer los elementos arrastrables
+// Actualizar la función updateNameList para agregar "Eliminar" como un enlace
 function updateNameList(names, listId) {
-    const nameList = document.getElementById(listId);
-    nameList.innerHTML = '';
+  const nameList = document.getElementById(listId);
+  nameList.innerHTML = '';
 
-    names.forEach((name, index) => {
-        const li = document.createElement('li');
-        li.textContent = name;
-        li.setAttribute('draggable', true); // Hacer el elemento arrastrable
-        li.setAttribute('data-index', index); // Guardar el índice del elemento
+  names.forEach((name, index) => {
+      const li = document.createElement('li');
+      li.textContent = name;
+      li.setAttribute('draggable', true); // Hacer el elemento arrastrable
+      li.setAttribute('data-index', index); // Guardar el índice del elemento
 
-        // Escuchar los eventos de arrastre y soltar
-        li.addEventListener('dragstart', handleDragStart);
-        li.addEventListener('dragover', handleDragOver);
-        li.addEventListener('drop', handleDrop);
+      // Crear el enlace de eliminar
+      const deleteLink = document.createElement('a');
+      deleteLink.textContent = 'Eliminar';
+      deleteLink.href = '#';
+      deleteLink.style.marginLeft = '10px';
+      deleteLink.style.color = 'red'; // Puedes cambiar el color si lo deseas
+      deleteLink.style.textDecoration = 'underline'; // Aparecerá como un enlace
+      deleteLink.addEventListener('click', (e) => {
+          e.preventDefault(); // Evitar que el enlace recargue la página
+          removePlayer(listId, index); // Llamar a la función de eliminación
+      });
 
-        nameList.appendChild(li);
-    });
+      // Añadir el enlace de eliminar y los eventos drag and drop
+      li.appendChild(deleteLink);
+      li.addEventListener('dragstart', handleDragStart);
+      li.addEventListener('dragover', handleDragOver);
+      li.addEventListener('drop', handleDrop);
+
+      nameList.appendChild(li);
+  });
+}
+
+function removePlayer(listId, index) {
+  if (listId === 'nameList1') {
+      namesList1.splice(index, 1); // Eliminar de namesList1
+      updateNameList(namesList1, 'nameList1'); // Actualizar la lista visual
+  } else if (listId === 'nameList2') {
+      namesList2.splice(index, 1); // Eliminar de namesList2
+      updateNameList(namesList2, 'nameList2'); // Actualizar la lista visual
+  }
 }
 
 window.onload = () => {
