@@ -110,32 +110,32 @@
         }
 
         function startTimer(duration, display) {
-    if (!validateTeamSelection()) {
-        alert('Por favor selecciona exactamente dos equipos para jugar.');
-        return;
-    }
+            if (!validateTeamSelection()) {
+                alert('Por favor selecciona exactamente dos equipos para jugar.');
+                return;
+            }
 
-    let timer = duration, minutes, seconds;
-    const alarmSound = document.getElementById('alarmSound');
+            let timer = duration, minutes, seconds;
+            const alarmSound = document.getElementById('alarmSound');
 
-    interval = setInterval(() => {
-        if (!isRunning) return;
+            interval = setInterval(() => {
+                if (!isRunning) return;
 
-        minutes = parseInt(timer / 60, 10);
-        seconds = parseInt(timer % 60, 10);
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
 
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        display.textContent = minutes + ":" + seconds;
+                display.textContent = minutes + ":" + seconds;
 
-        if (--timer < 0) {
-            timer = duration;
-            alarmSound.play(); // Play the sound when the timer hits zero
-            showNextName(); // Mostrar solo los nombres de los equipos seleccionados
+                if (--timer < 0) {
+                    timer = duration;
+                    alarmSound.play(); // Play the sound when the timer hits zero
+                    showNextName(); // Mostrar solo los nombres de los equipos seleccionados
+                }
+            }, 1000);
         }
-    }, 1000);
-}
 
         function showNextName() {
             let nameDisplay = '';
@@ -145,7 +145,7 @@
 
             if (team1Selected && namesList1.length > 0) {
                 currentIndex1 = (currentIndex1 + 1) % namesList1.length;
-                nameDisplay += `Salen: ${namesList1[currentIndex1]} `;
+                nameDisplay += `Atajan: ${namesList1[currentIndex1]} `;
             }
             if (team2Selected && namesList2.length > 0) {
                 currentIndex2 = (currentIndex2 + 1) % namesList2.length;
@@ -238,11 +238,68 @@
         function updateNameList(names, listId) {
             const nameList = document.getElementById(listId);
             nameList.innerHTML = '';
+
             names.forEach((name, index) => {
                 const li = document.createElement('li');
                 li.textContent = name;
+                li.setAttribute('draggable', true);
+                li.setAttribute('data-index', index);
+
+                // Escuchar eventos de drag and drop
+                li.addEventListener('dragstart', handleDragStart);
+                li.addEventListener('dragover', handleDragOver);
+                li.addEventListener('drop', handleDrop);
+
                 nameList.appendChild(li);
             });
+        }
+
+        let draggedItemIndex = null;
+
+        function handleDragStart(e) {
+            draggedItemIndex = e.target.getAttribute('data-index'); // Guardamos el índice del elemento que estamos arrastrando
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault(); // Permitir que el elemento sea soltado
+        }
+
+        function handleDrop(e) {
+            const targetIndex = e.target.getAttribute('data-index'); // Índice del elemento sobre el que se suelta
+
+            // Determinar cuál lista estamos manejando
+            let namesList;
+            if (e.target.parentNode.id === 'nameList1') {
+                namesList = namesList1;
+            } else if (e.target.parentNode.id === 'nameList2') {
+                namesList = namesList2;
+            } else if (e.target.parentNode.id === 'nameList3') {
+                namesList = namesList3;
+            }
+
+            // Intercambiar los elementos en el arreglo
+            const temp = namesList[draggedItemIndex];
+            namesList[draggedItemIndex] = namesList[targetIndex];
+            namesList[targetIndex] = temp;
+
+            // Actualizar la lista visual
+            updateNameList(namesList, e.target.parentNode.id);
+
+            // Resetear el índice arrastrado
+            draggedItemIndex = null;
+
+            // Guardar los cambios en localStorage si es necesario
+            saveNamesToLocalStorage(e.target.parentNode.id, namesList);
+        }
+
+        function saveNamesToLocalStorage(listId, namesList) {
+            if (listId === 'nameList1') {
+                localStorage.setItem('namesList1', JSON.stringify(namesList));
+            } else if (listId === 'nameList2') {
+                localStorage.setItem('namesList2', JSON.stringify(namesList));
+            } else if (listId === 'nameList3') {
+                localStorage.setItem('namesList3', JSON.stringify(namesList));
+            }
         }
     </script>
 </body>
