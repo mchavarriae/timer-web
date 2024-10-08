@@ -49,6 +49,12 @@
     <button id="stopButton">Detener</button> <button id="restartButton">Restart</button>
     <h1 id="currentName"></h1>
 
+    <div>
+        <h3>Selecciona dos equipos para jugar:</h3>
+        <input type="checkbox" id="team1Checkbox" name="team1Checkbox"> Equipo 1
+        <input type="checkbox" id="team2Checkbox" name="team2Checkbox"> Equipo 2
+        <input type="checkbox" id="team3Checkbox" name="team3Checkbox"> Equipo 3
+    </div>
     <div class="container">
 
         <div class="column">
@@ -94,43 +100,62 @@
         let currentIndex2 = 0;
         let currentIndex3 = 0;
 
-        function startTimer(duration, display) {
-            let timer = duration, minutes, seconds;
-            const alarmSound = document.getElementById('alarmSound');
+        function validateTeamSelection() {
+            const team1Selected = document.getElementById('team1Checkbox').checked;
+            const team2Selected = document.getElementById('team2Checkbox').checked;
+            const team3Selected = document.getElementById('team3Checkbox').checked;
+            const selectedTeams = [team1Selected, team2Selected, team3Selected].filter(Boolean).length;
 
-            interval = setInterval(() => {
-                if (!isRunning) return;
-
-                minutes = parseInt(timer / 60, 10);
-                seconds = parseInt(timer % 60, 10);
-
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
-
-                display.textContent = minutes + ":" + seconds;
-
-                if (--timer < 0) {
-                    timer = duration;
-                    alarmSound.play(); // Play the sound when the timer hits zero
-                    showNextName();
-                }
-            }, 1000);
+            return selectedTeams === 2; // Solo debe permitir si exactamente 2 equipos están seleccionados
         }
+
+        function startTimer(duration, display) {
+    if (!validateTeamSelection()) {
+        alert('Por favor selecciona exactamente dos equipos para jugar.');
+        return;
+    }
+
+    let timer = duration, minutes, seconds;
+    const alarmSound = document.getElementById('alarmSound');
+
+    interval = setInterval(() => {
+        if (!isRunning) return;
+
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+
+        if (--timer < 0) {
+            timer = duration;
+            alarmSound.play(); // Play the sound when the timer hits zero
+            showNextName(); // Mostrar solo los nombres de los equipos seleccionados
+        }
+    }, 1000);
+}
 
         function showNextName() {
             let nameDisplay = '';
-            if (namesList1.length > 0) {
+            const team1Selected = document.getElementById('team1Checkbox').checked;
+            const team2Selected = document.getElementById('team2Checkbox').checked;
+            const team3Selected = document.getElementById('team3Checkbox').checked;
+
+            if (team1Selected && namesList1.length > 0) {
                 currentIndex1 = (currentIndex1 + 1) % namesList1.length;
                 nameDisplay += `Salen: ${namesList1[currentIndex1]} `;
             }
-            if (namesList2.length > 0) {
+            if (team2Selected && namesList2.length > 0) {
                 currentIndex2 = (currentIndex2 + 1) % namesList2.length;
                 nameDisplay += ` y ${namesList2[currentIndex2]} `;
             }
-            if (namesList3.length > 0) {
+            if (team3Selected && namesList3.length > 0) {
                 currentIndex3 = (currentIndex3 + 1) % namesList3.length;
                 nameDisplay += ` y ${namesList3[currentIndex3]}`;
             }
+
             document.getElementById('currentName').textContent = nameDisplay;
         }
 
@@ -138,7 +163,7 @@
             var noSleep = new NoSleep();
             noSleep.enable(); // keep the screen on!
 
-            let fiveMinutes = 60 * 5,
+            let fiveMinutes = 60 * 0.5,
                 display = document.querySelector('#timer');
             startTimer(fiveMinutes, display);
 
