@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Desempate - La Mejenga</title>
+    <style>
+        :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100dvh; display: grid; place-items: center; background: #0f172a; color: #e2e8f0; }
+        .app { width: min(640px, 92vw); text-align: center; }
+        h1 { font-weight: 700; letter-spacing: .5px; margin: 0 0 24px; font-size: clamp(20px, 3vw, 28px); opacity: .9; }
+        .dice { margin-inline: auto; width: clamp(180px, 40vw, 260px); height: clamp(180px, 40vw, 260px); border-radius: 24px; display: grid; place-items: center; font-size: clamp(72px, 12vw, 144px); font-weight: 800; line-height: 1; background: radial-gradient(120% 120% at 0% 0%, #1f2937 0%, #0b1022 60%, #0b1022 100%); box-shadow: 0 30px 60px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06); user-select: none; }
+        .dice.rolling { animation: wobble .6s ease-in-out infinite; }
+        @keyframes wobble {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            25% { transform: rotate(1.5deg) translateY(-2px); }
+            50% { transform: rotate(-1.5deg) translateY(2px); }
+            75% { transform: rotate(1deg) translateY(-1px); }
+        }
+        .controls { margin-top: 22px; display: flex; justify-content: center; gap: 12px; align-items: center; }
+        button { appearance: none; border: none; border-radius: 999px; padding: 12px 22px; font-size: 16px; font-weight: 700; cursor: pointer; background: linear-gradient(180deg, #22c55e, #16a34a); color: white; box-shadow: 0 8px 20px rgba(34,197,94,.35); transition: transform .08s ease, filter .2s ease, opacity .2s ease; }
+        button:hover { filter: brightness(1.05); }
+        button:active { transform: translateY(1px) scale(.99); }
+        button[disabled] { opacity: .6; cursor: not-allowed; }
+        .hint { opacity: .7; font-size: 13px; margin-top: 6px; }
+    </style>
+</head>
+<body>
+    <main class="app">
+        <h1>Desempate</h1>
+        <div id="dice" class="dice" aria-live="polite" aria-atomic="true">—</div>
+        <div class="controls">
+            <button id="rollBtn" type="button">Lanzar</button>
+        </div>
+        <div class="hint">El lanzamiento dura ~2 segundos.</div>
+        <div style="margin-top: 18px;">
+            <a href="index.html" style="color:#38bdf8; font-weight:600; text-decoration:none;">
+                Volver al cronometro
+            </a>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            const diceEl = document.getElementById('dice');
+            const btn = document.getElementById('rollBtn');
+
+            function randomFace() {
+                return Math.floor(Math.random() * 6) + 1; // 1..6
+            }
+
+            function roll() {
+                const durationMs = 2000;   // duración total de la animación
+                const tickMs = 90;         // cada cuánto cambia el número durante la animación
+
+                btn.disabled = true;
+                btn.textContent = 'Lanzando…';
+                diceEl.classList.add('rolling');
+
+                // Animación: ir cambiando rápidamente la cara del dado
+                const tick = setInterval(() => {
+                    diceEl.textContent = randomFace();
+                }, tickMs);
+
+                // Finalizar con el resultado definitivo
+                setTimeout(() => {
+                    clearInterval(tick);
+                    diceEl.classList.remove('rolling');
+                    diceEl.textContent = randomFace();
+                    btn.disabled = false;
+                    btn.textContent = 'Lanzar';
+                    // Lanzar serpentinas de celebración
+                    confetti({
+                        particleCount: 120,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                }, durationMs);
+            }
+
+            btn.addEventListener('click', roll);
+            // Tecla espacio/Enter también lanzan el dado cuando el botón tiene foco
+            btn.addEventListener('keydown', (e) => {
+                if ((e.code === 'Space' || e.code === 'Enter') && !btn.disabled) {
+                    e.preventDefault();
+                    roll();
+                }
+            });
+        })();
+    </script>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</html>
