@@ -85,7 +85,7 @@
 
             btn.addEventListener('click', roll);
             document.addEventListener('click', (e) => {
-                if (e.target === btn) {
+                if (btn.contains(e.target) || e.target.closest('a')) {
                     return;
                 }
 
