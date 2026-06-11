@@ -92,14 +92,14 @@ window.onload = () => {
         display = document.querySelector('#timer');
     startTimer(fiveMinutes, display);
 
-    document.getElementById('stopButton').addEventListener('click', () => {
-      isRunning = !isRunning;
-      if (!isRunning) {
-        clearInterval(interval);
-      } else {
-        startTimer(fiveMinutes, display);
-      }
-    });
+    // document.getElementById('stopButton').addEventListener('click', () => {
+    //   isRunning = !isRunning;
+    //   if (!isRunning) {
+    //     clearInterval(interval);
+    //   } else {
+    //     startTimer(fiveMinutes, display);
+    //   }
+    // });
 
     document.getElementById('restartButton').addEventListener('click', () => {
       clearInterval(interval);

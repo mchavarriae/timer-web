@@ -79,7 +79,19 @@
                 }, durationMs);
             }
 
+            function showWarning() {
+                window.alert('SEA NECIO, SOLO TOQUE EL BOTON!');
+            }
+
             btn.addEventListener('click', roll);
+            document.addEventListener('click', (e) => {
+                if (e.target === btn) {
+                    return;
+                }
+
+                e.preventDefault();
+                showWarning();
+            });
             // Tecla espacio/Enter también lanzan el dado cuando el botón tiene foco
             btn.addEventListener('keydown', (e) => {
                 if ((e.code === 'Space' || e.code === 'Enter') && !btn.disabled) {
